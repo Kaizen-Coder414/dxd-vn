@@ -111,130 +111,128 @@ button:focus-visible, input:focus-visible, select:focus-visible, [tabindex]:focu
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; } }
 
 
-/* === TITLE SCREEN / MODERATE AMBIENT MOTION === */
+/* === TITLE SCREEN / APPROVED ARTWORK WITH IMAGE-BAKED MENU === */
 .game-frame { display: none; }
 .game-frame.is-active { display: block; }
 .modal-backdrop { z-index: 150; }
 .title-screen {
   position: fixed; inset: 0; z-index: 100; overflow: hidden;
-  display: grid; grid-template-columns: minmax(230px, 26vw) 1fr;
-  align-items: end; padding: 0 0 5vh 3.2vw;
+  display: grid; place-items: center;
   background: #090611; isolation: isolate;
 }
 .title-screen.is-hidden { display: none; }
-.title-art {
-  position: absolute; inset: 0; z-index: -4; width: 100%; height: 100%;
-  object-fit: cover; object-position: center;
-  animation: title-art-drift 28s ease-in-out infinite alternate;
-  transform-origin: 54% 50%;
-}
+/* Soft extension fills ultra-wide phone screens while the actual 16:9 artwork stays whole. */
 .title-screen::before {
-  content:""; position:absolute; inset:0; z-index:-3; pointer-events:none;
-  background: linear-gradient(90deg, rgba(9,4,13,.72) 0%, rgba(9,4,13,.38) 24%, transparent 49%),
-              linear-gradient(0deg, rgba(7,3,11,.28), transparent 30%);
+  content:""; position:absolute; inset:-22px; z-index:0; pointer-events:none;
+  background: url("./assets/title-screen.png") center / cover no-repeat;
+  filter: blur(18px) brightness(.34) saturate(.78);
+  transform: scale(1.04);
+}
+.title-stage {
+  position:relative; z-index:1; flex:none; overflow:hidden;
+  width:min(100vw,177.7778vh); height:min(100vh,56.25vw);
+  aspect-ratio:16 / 9; isolation:isolate;
+}
+.title-art {
+  position:absolute; inset:0; z-index:0; display:block;
+  width:100%; height:100%; object-fit:fill; object-position:center;
+  /* Keep the approved illustration and its typography perfectly undistorted. */
+  animation:none; transform:none;
 }
 .moon-aura {
-  position:absolute; z-index:-2; pointer-events:none; width:34vmin; height:34vmin;
-  top:-4vmin; right:8.5%; border-radius:50%;
-  background: radial-gradient(circle, rgba(219,38,66,.22) 0%, rgba(163,22,51,.12) 38%, transparent 70%);
-  filter: blur(12px); animation: moon-pulse 7s ease-in-out infinite;
+  position:absolute; z-index:1; pointer-events:none; width:34%; aspect-ratio:1;
+  top:-4%; right:8.5%; border-radius:50%;
+  background:radial-gradient(circle,rgba(219,38,66,.13) 0%,rgba(163,22,51,.07) 38%,transparent 70%);
+  filter:blur(12px); animation:moon-pulse 7s ease-in-out infinite;
 }
-.title-petals { position:absolute; inset:0; z-index:-1; overflow:hidden; pointer-events:none; }
+.title-petals { position:absolute; inset:0; z-index:2; overflow:hidden; pointer-events:none; }
 .title-petal {
   position:absolute; top:-8%; width:9px; height:13px; border-radius:85% 15% 75% 25%;
   background:linear-gradient(135deg,#ff7891,#a91d43); opacity:0;
   filter:drop-shadow(0 0 4px rgba(255,93,125,.25));
-  animation: petal-drift var(--duration,17s) linear infinite;
+  animation:petal-drift var(--duration,17s) linear infinite;
   animation-delay:var(--delay,0s); left:var(--left,50%);
 }
 .title-petal:nth-child(2n) { width:7px; height:10px; background:#d94c70; }
 .title-petal:nth-child(3n) { width:5px; height:8px; background:#f39bad; }
+/* The approved artwork already contains the ornate menu and its lettering.
+   These transparent hit areas make the printed buttons interactive without duplicating them. */
 .title-menu {
-  position:relative; z-index:2; width:min(100%, 330px); display:grid; gap:8px;
-  align-self:center; margin-top:17vh; padding:12px 0;
+  position:absolute; inset:0; z-index:4; display:block; width:100%; height:100%;
+  margin:0; padding:0; pointer-events:none;
 }
 .title-menu button {
-  min-height:clamp(38px,5.2vh,58px); padding:7px 16px;
-  display:flex; align-items:center; gap:14px; text-align:left;
-  border:1px solid rgba(224,183,100,.88); border-radius:5px;
-  background:linear-gradient(100deg,rgba(82,10,31,.96),rgba(25,7,20,.91));
-  color:#fff0d0; font:700 clamp(13px,1.35vw,19px) Georgia,serif;
-  letter-spacing:.025em; box-shadow:inset 0 0 0 1px rgba(40,5,16,.9),0 4px 14px rgba(0,0,0,.38);
-  transition:transform .18s ease,border-color .18s ease,background .18s ease,box-shadow .18s ease;
+  position:absolute; left:3.25%; width:22.4%; height:6.25%;
+  margin:0; padding:0; border:0; border-radius:10px;
+  background:transparent; box-shadow:none; color:transparent;
+  font-size:0; line-height:0; opacity:1; cursor:pointer;
+  pointer-events:auto; transition:background .16s ease, box-shadow .16s ease;
 }
-.title-menu button .menu-glyph {
-  width:27px; flex:none; color:#f0c76d; text-align:center; font-size:1.3em;
+.title-menu button:nth-child(1) { top:33.55%; }
+.title-menu button:nth-child(2) { top:40.35%; }
+.title-menu button:nth-child(3) { top:47.15%; }
+.title-menu button:nth-child(4) { top:53.95%; }
+.title-menu button:nth-child(5) { top:60.75%; }
+.title-menu button:nth-child(6) { top:67.55%; }
+.title-menu button:nth-child(7) { top:74.35%; }
+.title-menu button:nth-child(8) { top:81.15%; }
+.title-menu button .menu-glyph { display:none; }
+.title-menu button:hover {
+  background:rgba(255,211,112,.08);
+  box-shadow:inset 0 0 0 1px rgba(255,220,145,.34),0 0 15px rgba(224,54,76,.12);
 }
-.title-menu button:hover,.title-menu button:focus-visible {
-  transform:translateX(5px); border-color:#fff0b5;
-  background:linear-gradient(100deg,rgba(147,20,48,.98),rgba(49,8,27,.96));
-  box-shadow:0 0 17px rgba(225,45,73,.24),inset 0 0 0 1px #e6bd72;
-}
-.title-menu button.primary {
-  border-color:#f2c96d; background:linear-gradient(100deg,rgba(148,15,40,.98),rgba(74,8,28,.96));
-  box-shadow:0 0 16px rgba(225,42,67,.25),inset 0 0 0 1px rgba(255,221,142,.55);
+.title-menu button:focus-visible {
+  outline:2px solid rgba(255,225,155,.9); outline-offset:2px;
+  background:rgba(255,211,112,.08);
 }
 .title-version {
-  position:absolute; right:18px; bottom:12px; z-index:2;
-  color:rgba(231,204,157,.62); font:10px Georgia,serif; letter-spacing:.12em;
-}
-@keyframes title-art-drift {
-  from { transform:scale(1.015) translate3d(0,0,0); }
-  to { transform:scale(1.045) translate3d(-.45%,.25%,0); }
+  position:absolute; right:1.2%; bottom:1.2%; z-index:5;
+  color:rgba(231,204,157,.52); font:9px Georgia,serif; letter-spacing:.12em;
+  pointer-events:none;
 }
 @keyframes moon-pulse {
-  0%,100% { opacity:.46; transform:scale(.92); }
-  50% { opacity:.9; transform:scale(1.08); }
+  0%,100% { opacity:.35; transform:scale(.94); }
+  50% { opacity:.72; transform:scale(1.06); }
 }
 @keyframes petal-drift {
   0% { transform:translate3d(0,-5vh,0) rotate(0deg); opacity:0; }
-  10% { opacity:.72; }
-  55% { transform:translate3d(5vw,53vh,0) rotate(230deg); opacity:.58; }
-  90% { opacity:.38; }
+  10% { opacity:.66; }
+  55% { transform:translate3d(5vw,53vh,0) rotate(230deg); opacity:.52; }
+  90% { opacity:.32; }
   100% { transform:translate3d(-3vw,112vh,0) rotate(510deg); opacity:0; }
 }
-@media (max-width:700px) {
-  .title-screen { grid-template-columns:minmax(170px,31vw) 1fr; padding-left:2.5vw; }
-  .title-menu { width:min(100%,220px); gap:6px; margin-top:18vh; }
-  .title-menu button { min-height:clamp(34px,6vh,48px); padding:5px 9px; gap:8px; font-size:clamp(11px,2.1vw,16px); }
-  .title-menu button .menu-glyph { width:20px; }
-}
-@media (max-height:430px) {
-  .title-screen { padding-bottom:2vh; }
-  .title-menu { gap:4px; margin-top:13vh; }
-  .title-menu button { min-height:clamp(29px,7.3vh,39px); }
-}
 @media (prefers-reduced-motion: reduce) {
-  .title-art,.moon-aura,.title-petal { animation:none !important; }
+  .moon-aura,.title-petal { animation:none !important; }
 }
-
 </style>
   </head>
   <body>
     <main id="app" class="app-shell" aria-label="Visual novel prototype">
 
       <section class="title-screen" id="titleScreen" aria-label="DxD VN title screen">
-        <img class="title-art" src="./assets/title-screen.png" alt="" />
-        <div class="moon-aura" aria-hidden="true"></div>
-        <div class="title-petals" aria-hidden="true">
-          <i class="title-petal" style="--left:7%;--duration:19s;--delay:-3s"></i>
-          <i class="title-petal" style="--left:18%;--duration:16s;--delay:-11s"></i>
-          <i class="title-petal" style="--left:39%;--duration:21s;--delay:-7s"></i>
-          <i class="title-petal" style="--left:62%;--duration:18s;--delay:-14s"></i>
-          <i class="title-petal" style="--left:83%;--duration:20s;--delay:-5s"></i>
-          <i class="title-petal" style="--left:94%;--duration:17s;--delay:-9s"></i>
+        <div class="title-stage">
+          <img class="title-art" src="./assets/title-screen.png" alt="High School DxD visual novel title screen" />
+          <div class="moon-aura" aria-hidden="true"></div>
+          <div class="title-petals" aria-hidden="true">
+            <i class="title-petal" style="--left:7%;--duration:19s;--delay:-3s"></i>
+            <i class="title-petal" style="--left:18%;--duration:16s;--delay:-11s"></i>
+            <i class="title-petal" style="--left:39%;--duration:21s;--delay:-7s"></i>
+            <i class="title-petal" style="--left:62%;--duration:18s;--delay:-14s"></i>
+            <i class="title-petal" style="--left:83%;--duration:20s;--delay:-5s"></i>
+            <i class="title-petal" style="--left:94%;--duration:17s;--delay:-9s"></i>
+          </div>
+          <nav class="title-menu" aria-label="Main menu">
+            <button class="primary" data-title-action="new" aria-label="New Game"><span class="menu-glyph">▶</span><span class="sr-only">New Game</span></button>
+            <button data-title-action="continue" aria-label="Continue"><span class="menu-glyph">▮</span><span class="sr-only">Continue</span></button>
+            <button data-title-action="load" aria-label="Load Game"><span class="menu-glyph">▣</span><span class="sr-only">Load Game</span></button>
+            <button data-title-action="save" aria-label="Save Game"><span class="menu-glyph">▤</span><span class="sr-only">Save Game</span></button>
+            <button data-title-action="preferences" aria-label="Preferences"><span class="menu-glyph">⚙</span><span class="sr-only">Preferences</span></button>
+            <button data-title-action="extras" aria-label="Extras"><span class="menu-glyph">✧</span><span class="sr-only">Extras</span></button>
+            <button data-title-action="gallery" aria-label="Gallery"><span class="menu-glyph">▧</span><span class="sr-only">Gallery</span></button>
+            <button data-title-action="quit" aria-label="Quit"><span class="menu-glyph">⏻</span><span class="sr-only">Quit</span></button>
+          </nav>
+          <div class="title-version">DXD VN · ENGINE 0.1.6</div>
         </div>
-        <nav class="title-menu" aria-label="Main menu">
-          <button class="primary" data-title-action="new"><span class="menu-glyph">▶</span>New Game</button>
-          <button data-title-action="continue"><span class="menu-glyph">▮</span>Continue</button>
-          <button data-title-action="load"><span class="menu-glyph">▣</span>Load Game</button>
-          <button data-title-action="save"><span class="menu-glyph">▤</span>Save Game</button>
-          <button data-title-action="preferences"><span class="menu-glyph">⚙</span>Preferences</button>
-          <button data-title-action="extras"><span class="menu-glyph">✧</span>Extras</button>
-          <button data-title-action="gallery"><span class="menu-glyph">▧</span>Gallery</button>
-          <button data-title-action="quit"><span class="menu-glyph">⏻</span>Quit</button>
-        </nav>
-        <div class="title-version">DXD VN · ENGINE 0.1.5</div>
       </section>
 
       <section class="game-frame" aria-label="Game screen">
