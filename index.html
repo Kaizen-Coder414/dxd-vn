@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
     <meta name="theme-color" content="#160b12" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -13,7 +13,7 @@
     <meta name="description" content="A custom, offline-capable visual novel engine prototype." />
     
     
-    <title>DxD VN — Engine 0.1.5</title>
+    <title>DxD VN — Engine 0.1.8</title>
   <style>
 :root {
   color-scheme: dark;
@@ -111,98 +111,138 @@ button:focus-visible, input:focus-visible, select:focus-visible, [tabindex]:focu
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; } }
 
 
-/* === TITLE SCREEN / APPROVED ARTWORK WITH IMAGE-BAKED MENU === */
+/* === TITLE SCREEN / FULL-WIDTH APPROVED ARTWORK === */
 .game-frame { display: none; }
 .game-frame.is-active { display: block; }
 .modal-backdrop { z-index: 150; }
+
 .title-screen {
-  position: fixed; inset: 0; z-index: 100; overflow: hidden;
-  display: grid; place-items: center;
-  background: #090611; isolation: isolate;
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  width: 100vw;
+  height: 100dvh;
+  overflow: hidden;
+  display: block;
+  background: #090611;
+  isolation: isolate;
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
 }
 .title-screen.is-hidden { display: none; }
-/* Soft extension fills ultra-wide phone screens while the actual 16:9 artwork stays whole. */
-.title-screen::before {
-  content:""; position:absolute; inset:-22px; z-index:0; pointer-events:none;
-  background: url("./assets/title-screen.png") center / cover no-repeat;
-  filter: blur(18px) brightness(.34) saturate(.78);
-  transform: scale(1.04);
-}
+
+/* The artwork fills the actual landscape viewport; no letterbox bars or image-gallery interaction. */
 .title-stage {
-  position:relative; z-index:1; flex:none; overflow:hidden;
-  width:min(100vw,177.7778vh); height:min(100vh,56.25vw);
-  aspect-ratio:16 / 9; isolation:isolate;
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  isolation: isolate;
 }
 .title-art {
-  position:absolute; inset:0; z-index:0; display:block;
-  width:100%; height:100%; object-fit:fill; object-position:center;
-  /* Keep the approved illustration and its typography perfectly undistorted. */
-  animation:none; transform:none;
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  object-position: center;
+  pointer-events: none;
+  -webkit-user-drag: none;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+  animation: none !important;
+  transition: none !important;
+  transform: none !important;
 }
-.moon-aura {
-  position:absolute; z-index:1; pointer-events:none; width:34%; aspect-ratio:1;
-  top:-4%; right:8.5%; border-radius:50%;
-  background:radial-gradient(circle,rgba(219,38,66,.13) 0%,rgba(163,22,51,.07) 38%,transparent 70%);
-  filter:blur(12px); animation:moon-pulse 7s ease-in-out infinite;
-}
-.title-petals { position:absolute; inset:0; z-index:2; overflow:hidden; pointer-events:none; }
-.title-petal {
-  position:absolute; top:-8%; width:9px; height:13px; border-radius:85% 15% 75% 25%;
-  background:linear-gradient(135deg,#ff7891,#a91d43); opacity:0;
-  filter:drop-shadow(0 0 4px rgba(255,93,125,.25));
-  animation:petal-drift var(--duration,17s) linear infinite;
-  animation-delay:var(--delay,0s); left:var(--left,50%);
-}
-.title-petal:nth-child(2n) { width:7px; height:10px; background:#d94c70; }
-.title-petal:nth-child(3n) { width:5px; height:8px; background:#f39bad; }
-/* The approved artwork already contains the ornate menu and its lettering.
-   These transparent hit areas make the printed buttons interactive without duplicating them. */
+
+/* All visible labels and button art are baked into the approved master image.
+   These transparent buttons are correctly aligned click targets only. */
 .title-menu {
-  position:absolute; inset:0; z-index:4; display:block; width:100%; height:100%;
-  margin:0; padding:0; pointer-events:none;
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  display: block;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  pointer-events: none;
+  -webkit-user-select: none;
+  user-select: none;
 }
 .title-menu button {
-  position:absolute; left:3.25%; width:22.4%; height:6.25%;
-  margin:0; padding:0; border:0; border-radius:10px;
-  background:transparent; box-shadow:none; color:transparent;
-  font-size:0; line-height:0; opacity:1; cursor:pointer;
-  pointer-events:auto; transition:background .16s ease, box-shadow .16s ease;
+  position: absolute;
+  left: 5.2%;
+  width: 21.6%;
+  height: 6.1%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  appearance: none;
+  background: transparent !important;
+  box-shadow: none !important;
+  outline: none;
+  color: transparent;
+  font-size: 0;
+  line-height: 0;
+  opacity: 1;
+  cursor: pointer;
+  pointer-events: auto;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+  touch-action: none;
+  animation: none !important;
+  transition: none !important;
 }
-.title-menu button:nth-child(1) { top:33.55%; }
-.title-menu button:nth-child(2) { top:40.35%; }
-.title-menu button:nth-child(3) { top:47.15%; }
-.title-menu button:nth-child(4) { top:53.95%; }
-.title-menu button:nth-child(5) { top:60.75%; }
-.title-menu button:nth-child(6) { top:67.55%; }
-.title-menu button:nth-child(7) { top:74.35%; }
-.title-menu button:nth-child(8) { top:81.15%; }
-.title-menu button .menu-glyph { display:none; }
-.title-menu button:hover {
-  background:rgba(255,211,112,.08);
-  box-shadow:inset 0 0 0 1px rgba(255,220,145,.34),0 0 15px rgba(224,54,76,.12);
+.title-menu button:nth-child(1) { top: 31.7%; }
+.title-menu button:nth-child(2) { top: 39.55%; }
+.title-menu button:nth-child(3) { top: 47.35%; }
+.title-menu button:nth-child(4) { top: 55.15%; }
+.title-menu button:nth-child(5) { top: 62.95%; }
+.title-menu button:nth-child(6) { top: 70.75%; }
+.title-menu button:nth-child(7) { top: 78.55%; }
+.title-menu button:nth-child(8) { top: 86.35%; }
+.title-menu button .menu-glyph { display: none; }
+.title-menu button:hover,
+.title-menu button:active,
+.title-menu button:focus {
+  background: transparent !important;
+  box-shadow: none !important;
+  outline: none !important;
 }
 .title-menu button:focus-visible {
-  outline:2px solid rgba(255,225,155,.9); outline-offset:2px;
-  background:rgba(255,211,112,.08);
+  outline: 2px solid rgba(255,225,155,.9) !important;
+  outline-offset: 2px;
 }
 .title-version {
-  position:absolute; right:1.2%; bottom:1.2%; z-index:5;
-  color:rgba(231,204,157,.52); font:9px Georgia,serif; letter-spacing:.12em;
-  pointer-events:none;
+  position: absolute;
+  right: 1.2%;
+  bottom: 1.2%;
+  z-index: 5;
+  color: rgba(231,204,157,.52);
+  font: 9px Georgia,serif;
+  letter-spacing: .12em;
+  pointer-events: none;
 }
-@keyframes moon-pulse {
-  0%,100% { opacity:.35; transform:scale(.94); }
-  50% { opacity:.72; transform:scale(1.06); }
+
+/* No title-screen animation: all atmosphere and artwork remain completely static. */
+.title-screen *,
+.title-screen *::before,
+.title-screen *::after {
+  animation: none !important;
+  transition: none !important;
 }
-@keyframes petal-drift {
-  0% { transform:translate3d(0,-5vh,0) rotate(0deg); opacity:0; }
-  10% { opacity:.66; }
-  55% { transform:translate3d(5vw,53vh,0) rotate(230deg); opacity:.52; }
-  90% { opacity:.32; }
-  100% { transform:translate3d(-3vw,112vh,0) rotate(510deg); opacity:0; }
-}
-@media (prefers-reduced-motion: reduce) {
-  .moon-aura,.title-petal { animation:none !important; }
+
 }
 </style>
   </head>
@@ -212,15 +252,6 @@ button:focus-visible, input:focus-visible, select:focus-visible, [tabindex]:focu
       <section class="title-screen" id="titleScreen" aria-label="DxD VN title screen">
         <div class="title-stage">
           <img class="title-art" src="./assets/title-screen.png" alt="High School DxD visual novel title screen" />
-          <div class="moon-aura" aria-hidden="true"></div>
-          <div class="title-petals" aria-hidden="true">
-            <i class="title-petal" style="--left:7%;--duration:19s;--delay:-3s"></i>
-            <i class="title-petal" style="--left:18%;--duration:16s;--delay:-11s"></i>
-            <i class="title-petal" style="--left:39%;--duration:21s;--delay:-7s"></i>
-            <i class="title-petal" style="--left:62%;--duration:18s;--delay:-14s"></i>
-            <i class="title-petal" style="--left:83%;--duration:20s;--delay:-5s"></i>
-            <i class="title-petal" style="--left:94%;--duration:17s;--delay:-9s"></i>
-          </div>
           <nav class="title-menu" aria-label="Main menu">
             <button class="primary" data-title-action="new" aria-label="New Game"><span class="menu-glyph">▶</span><span class="sr-only">New Game</span></button>
             <button data-title-action="continue" aria-label="Continue"><span class="menu-glyph">▮</span><span class="sr-only">Continue</span></button>
@@ -231,7 +262,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, [tabindex]:focu
             <button data-title-action="gallery" aria-label="Gallery"><span class="menu-glyph">▧</span><span class="sr-only">Gallery</span></button>
             <button data-title-action="quit" aria-label="Quit"><span class="menu-glyph">⏻</span><span class="sr-only">Quit</span></button>
           </nav>
-          <div class="title-version">DXD VN · ENGINE 0.1.6</div>
+          <div class="title-version">DXD VN · ENGINE 0.1.8</div>
         </div>
       </section>
 
@@ -314,6 +345,24 @@ button:focus-visible, input:focus-visible, select:focus-visible, [tabindex]:focu
           current=latest.current;identity.firstName=latest.identity.firstName;identity.surname=latest.identity.surname;entries=latest.entries||[];
           showGame();render();toast('Continue: save loaded.');
         }
+
+        // Keep the title screen behaving like a game menu, not a standalone image.
+        const titleScreen = $('#titleScreen');
+        if (titleScreen) {
+          const suppressNativeImageMenu = (event) => event.preventDefault();
+          titleScreen.addEventListener('contextmenu', suppressNativeImageMenu);
+          titleScreen.addEventListener('dragstart', suppressNativeImageMenu);
+          titleScreen.addEventListener('selectstart', suppressNativeImageMenu);
+          titleScreen.addEventListener('touchmove', (event) => {
+            if (event.touches && event.touches.length > 1) event.preventDefault();
+          }, { passive: false });
+          titleScreen.querySelectorAll('img').forEach((image) => {
+            image.draggable = false;
+            image.addEventListener('contextmenu', suppressNativeImageMenu);
+            image.addEventListener('dragstart', suppressNativeImageMenu);
+          });
+        }
+
         document.querySelectorAll('[data-title-action]').forEach(button=>button.addEventListener('click',()=>{
           const action=button.dataset.titleAction;
           if(action==='new'){showGame();restart();}
