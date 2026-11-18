@@ -13,7 +13,7 @@
     <meta name="description" content="A custom, offline-capable visual novel engine prototype." />
     
     
-    <title>DxD VN — Engine 0.1.8</title>
+    <title>DxD VN — Engine 0.1.9</title>
   <style>
 :root {
   color-scheme: dark;
@@ -111,7 +111,8 @@ button:focus-visible, input:focus-visible, select:focus-visible, [tabindex]:focu
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; } }
 
 
-/* === TITLE SCREEN / FULL-WIDTH APPROVED ARTWORK === */
+
+/* === TITLE SCREEN v0.1.9: FIXED 16:9 PRESENTATION === */
 .game-frame { display: none; }
 .game-frame.is-active { display: block; }
 .modal-backdrop { z-index: 150; }
@@ -124,8 +125,10 @@ button:focus-visible, input:focus-visible, select:focus-visible, [tabindex]:focu
   height: 100dvh;
   overflow: hidden;
   display: block;
-  background: #090611;
   isolation: isolate;
+  background:
+    radial-gradient(ellipse at 50% 48%, rgba(75,16,39,.22), transparent 58%),
+    #08050d;
   touch-action: none;
   -webkit-user-select: none;
   user-select: none;
@@ -133,15 +136,21 @@ button:focus-visible, input:focus-visible, select:focus-visible, [tabindex]:focu
 }
 .title-screen.is-hidden { display: none; }
 
-/* The artwork fills the actual landscape viewport; no letterbox bars or image-gallery interaction. */
+/* The game stage is always 16:9. On ultra-wide phones, the remaining side area
+   stays dark rather than stretching or cropping the approved artwork. */
 .title-stage {
   position: absolute;
-  inset: 0;
+  left: 50%;
+  top: 50%;
+  width: min(100vw, 177.7778dvh);
+  height: min(100dvh, 56.25vw);
+  aspect-ratio: 16 / 9;
+  transform: translate(-50%, -50%);
   z-index: 1;
-  width: 100%;
-  height: 100%;
   overflow: hidden;
   isolation: isolate;
+  background: #0c0711;
+  box-shadow: 0 0 44px rgba(0,0,0,.34);
 }
 .title-art {
   position: absolute;
@@ -150,7 +159,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, [tabindex]:focu
   display: block;
   width: 100%;
   height: 100%;
-  object-fit: fill;
+  object-fit: contain;
   object-position: center;
   pointer-events: none;
   -webkit-user-drag: none;
@@ -162,8 +171,26 @@ button:focus-visible, input:focus-visible, select:focus-visible, [tabindex]:focu
   transform: none !important;
 }
 
-/* All visible labels and button art are baked into the approved master image.
-   These transparent buttons are correctly aligned click targets only. */
+/* Cover the eight labels baked into the illustration. New HTML buttons sit
+   above this quiet crimson panel so options can be removed and spaced properly. */
+.title-menu-backplate {
+  position: absolute;
+  z-index: 2;
+  left: 3.35%;
+  top: 30%;
+  width: 24.7%;
+  height: 64.9%;
+  border: 1px solid rgba(200,157,82,.25);
+  border-radius: 7px;
+  background:
+    radial-gradient(ellipse at 28% 0%, #24101b 0%, transparent 54%),
+    linear-gradient(180deg, #100610, #1a0713 48%, #100610);
+  box-shadow:
+    inset 0 0 0 1px rgba(44,12,24,.8),
+    inset 0 0 28px rgba(113,20,48,.13),
+    0 8px 20px rgba(0,0,0,.22);
+  pointer-events: none;
+}
 .title-menu {
   position: absolute;
   inset: 0;
@@ -179,50 +206,97 @@ button:focus-visible, input:focus-visible, select:focus-visible, [tabindex]:focu
 }
 .title-menu button {
   position: absolute;
-  left: 5.2%;
-  width: 21.6%;
-  height: 6.1%;
+  left: 5.05%;
+  width: 21.35%;
+  height: 7.35%;
+  min-height: 0;
   margin: 0;
-  padding: 0;
-  border: 0;
-  border-radius: 0;
+  padding: 0 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(7px, .8vw, 13px);
+  border: 1.5px solid #d6ae60;
+  border-radius: 11px 5px 11px 5px;
   appearance: none;
-  background: transparent !important;
-  box-shadow: none !important;
-  outline: none;
-  color: transparent;
-  font-size: 0;
-  line-height: 0;
-  opacity: 1;
+  background:
+    linear-gradient(90deg, rgba(111,17,43,.98), rgba(43,8,25,.99) 52%, rgba(105,17,42,.98));
+  color: #fff0d4;
+  font: 700 clamp(14px, 1.45vw, 22px) Georgia, 'Times New Roman', serif;
+  letter-spacing: .01em;
+  text-shadow: 0 1px 2px rgba(0,0,0,.9);
+  box-shadow:
+    inset 0 0 0 2px rgba(30,6,16,.8),
+    inset 0 0 0 3px rgba(215,174,94,.25),
+    0 3px 10px rgba(0,0,0,.34);
   cursor: pointer;
   pointer-events: auto;
   -webkit-tap-highlight-color: transparent;
   -webkit-touch-callout: none;
   -webkit-user-select: none;
   user-select: none;
-  touch-action: none;
-  animation: none !important;
-  transition: none !important;
+  touch-action: manipulation;
+  outline: none;
+  transform: scale(1);
+  transform-origin: center;
+  transition:
+    transform 130ms ease,
+    filter 130ms ease,
+    box-shadow 130ms ease,
+    border-color 130ms ease;
 }
-.title-menu button:nth-child(1) { top: 31.7%; }
-.title-menu button:nth-child(2) { top: 39.55%; }
-.title-menu button:nth-child(3) { top: 47.35%; }
-.title-menu button:nth-child(4) { top: 55.15%; }
-.title-menu button:nth-child(5) { top: 62.95%; }
-.title-menu button:nth-child(6) { top: 70.75%; }
-.title-menu button:nth-child(7) { top: 78.55%; }
-.title-menu button:nth-child(8) { top: 86.35%; }
-.title-menu button .menu-glyph { display: none; }
-.title-menu button:hover,
-.title-menu button:active,
-.title-menu button:focus {
-  background: transparent !important;
-  box-shadow: none !important;
-  outline: none !important;
+.title-menu button::before,
+.title-menu button::after {
+  content: "✧";
+  position: absolute;
+  top: 50%;
+  transform: translateY(-52%);
+  color: #edc66e;
+  font: 400 clamp(13px, 1.2vw, 18px) Georgia, serif;
+  text-shadow: 0 0 5px rgba(239,192,98,.24);
+  pointer-events: none;
+}
+.title-menu button::before { left: 8px; }
+.title-menu button::after { right: 8px; }
+.title-menu button .menu-glyph {
+  display: inline-grid;
+  place-items: center;
+  flex: 0 0 22px;
+  color: #f2c968;
+  font-size: clamp(14px, 1.45vw, 21px);
+  line-height: 1;
+}
+.title-menu button .menu-label {
+  display: inline-block;
+  min-width: 0;
+  white-space: nowrap;
+}
+.title-menu button:nth-child(1) { top: 31.2%; }
+.title-menu button:nth-child(2) { top: 41.15%; }
+.title-menu button:nth-child(3) { top: 51.1%; }
+.title-menu button:nth-child(4) { top: 61.05%; }
+.title-menu button:nth-child(5) { top: 71%; }
+.title-menu button:nth-child(6) { top: 80.95%; }
+
+@media (hover: hover) and (pointer: fine) {
+  .title-menu button:hover {
+    transform: scale(.975);
+    filter: brightness(1.08);
+    border-color: #ffe0a0;
+    box-shadow:
+      inset 0 0 0 2px rgba(30,6,16,.8),
+      inset 0 0 0 3px rgba(255,221,151,.32),
+      0 0 14px rgba(228,179,93,.23),
+      0 3px 10px rgba(0,0,0,.34);
+  }
+}
+.title-menu button:active {
+  transform: scale(.945);
+  filter: brightness(1.13);
 }
 .title-menu button:focus-visible {
-  outline: 2px solid rgba(255,225,155,.9) !important;
-  outline-offset: 2px;
+  outline: 2px solid rgba(255,225,155,.9);
+  outline-offset: 3px;
 }
 .title-version {
   position: absolute;
@@ -235,14 +309,46 @@ button:focus-visible, input:focus-visible, select:focus-visible, [tabindex]:focu
   pointer-events: none;
 }
 
-/* No title-screen animation: all atmosphere and artwork remain completely static. */
-.title-screen *,
-.title-screen *::before,
-.title-screen *::after {
+/* Title scene is static. Only menu interaction feedback has a short transition. */
+.title-screen .title-art,
+.title-screen .title-menu-backplate {
   animation: none !important;
-  transition: none !important;
 }
 
+/* Local soundtrack controls. Audio is selected and kept in this browser only. */
+.music-settings {
+  padding-top: 12px;
+  border-top: 1px solid rgba(198,161,92,.25);
+}
+.music-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+.music-controls .gold-button { flex: 1 1 auto; }
+.music-volume {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 10px;
+  color: #d9c18e;
+  font: 600 11px Georgia, serif;
+}
+.music-volume input { width: 100%; accent-color: #d6ae60; }
+.music-status {
+  margin: 3px 0 0;
+  color: #b9a796;
+  font-size: 11px;
+  line-height: 1.45;
+}
+@media (max-width: 720px) {
+  .title-menu button {
+    font-size: clamp(10px, 1.4vw, 16px);
+    gap: 4px;
+  }
+  .title-menu button::before { left: 5px; }
+  .title-menu button::after { right: 5px; }
+  .title-menu button .menu-glyph { flex-basis: 17px; }
 }
 </style>
   </head>
@@ -251,18 +357,17 @@ button:focus-visible, input:focus-visible, select:focus-visible, [tabindex]:focu
 
       <section class="title-screen" id="titleScreen" aria-label="DxD VN title screen">
         <div class="title-stage">
-          <img class="title-art" src="./assets/title-screen.png" alt="High School DxD visual novel title screen" />
+          <img class="title-art" src="./assets/title-screen.png" alt="" draggable="false" aria-hidden="true" />
+          <div class="title-menu-backplate" aria-hidden="true"></div>
           <nav class="title-menu" aria-label="Main menu">
-            <button class="primary" data-title-action="new" aria-label="New Game"><span class="menu-glyph">▶</span><span class="sr-only">New Game</span></button>
-            <button data-title-action="continue" aria-label="Continue"><span class="menu-glyph">▮</span><span class="sr-only">Continue</span></button>
-            <button data-title-action="load" aria-label="Load Game"><span class="menu-glyph">▣</span><span class="sr-only">Load Game</span></button>
-            <button data-title-action="save" aria-label="Save Game"><span class="menu-glyph">▤</span><span class="sr-only">Save Game</span></button>
-            <button data-title-action="preferences" aria-label="Preferences"><span class="menu-glyph">⚙</span><span class="sr-only">Preferences</span></button>
-            <button data-title-action="extras" aria-label="Extras"><span class="menu-glyph">✧</span><span class="sr-only">Extras</span></button>
-            <button data-title-action="gallery" aria-label="Gallery"><span class="menu-glyph">▧</span><span class="sr-only">Gallery</span></button>
-            <button data-title-action="quit" aria-label="Quit"><span class="menu-glyph">⏻</span><span class="sr-only">Quit</span></button>
+            <button class="primary" type="button" data-title-action="new" aria-label="New Game"><span class="menu-glyph" aria-hidden="true">▶</span><span class="menu-label">New Game</span></button>
+            <button type="button" data-title-action="continue" aria-label="Continue"><span class="menu-glyph" aria-hidden="true">▮</span><span class="menu-label">Continue</span></button>
+            <button type="button" data-title-action="load" aria-label="Load Game"><span class="menu-glyph" aria-hidden="true">▣</span><span class="menu-label">Load Game</span></button>
+            <button type="button" data-title-action="preferences" aria-label="Preferences"><span class="menu-glyph" aria-hidden="true">⚙</span><span class="menu-label">Preferences</span></button>
+            <button type="button" data-title-action="gallery" aria-label="Gallery"><span class="menu-glyph" aria-hidden="true">▧</span><span class="menu-label">Gallery</span></button>
+            <button type="button" data-title-action="quit" aria-label="Quit"><span class="menu-glyph" aria-hidden="true">⏻</span><span class="menu-label">Quit</span></button>
           </nav>
-          <div class="title-version">DXD VN · ENGINE 0.1.8</div>
+          <div class="title-version">DXD VN · ENGINE 0.1.9</div>
         </div>
       </section>
 
@@ -338,6 +443,79 @@ button:focus-visible, input:focus-visible, select:focus-visible, [tabindex]:focu
         function modal(title,html){$('#modalTitle').textContent=title;$('#modalContent').innerHTML=html;$('#modalBackdrop').classList.remove('hidden')}
         function closeModal(){$('#modalBackdrop').classList.add('hidden')}
         function showGame(){ $('#titleScreen').classList.add('is-hidden'); $('.game-frame').classList.add('is-active'); }
+
+        // User-selected soundtrack stays in this browser's IndexedDB; it is never uploaded to GitHub.
+        const bgmAudio = new Audio();
+        bgmAudio.loop = true;
+        bgmAudio.preload = 'auto';
+        bgmAudio.volume = Math.max(0, Math.min(1, Number(localStorage.getItem('dxd-vn-bgm-volume') || '0.42')));
+        let bgmObjectUrl = null;
+        let bgmTrackName = '';
+        function openBgmDb(){
+          return new Promise((resolve,reject)=>{
+            if(!('indexedDB' in window)){reject(new Error('IndexedDB is unavailable'));return;}
+            const request=indexedDB.open('dxd-vn-private-audio',1);
+            request.onupgradeneeded=()=>{const db=request.result;if(!db.objectStoreNames.contains('tracks'))db.createObjectStore('tracks');};
+            request.onsuccess=()=>resolve(request.result);
+            request.onerror=()=>reject(request.error||new Error('Could not open local audio storage'));
+          });
+        }
+        async function storeBgmFile(file){
+          const db=await openBgmDb();
+          return new Promise((resolve,reject)=>{
+            const tx=db.transaction('tracks','readwrite');
+            tx.objectStore('tracks').put({blob:file,name:file.name,type:file.type||'audio/mpeg'},'title-track');
+            tx.oncomplete=()=>{db.close();resolve();};
+            tx.onerror=()=>{const err=tx.error;db.close();reject(err||new Error('Could not save soundtrack'));};
+            tx.onabort=()=>{const err=tx.error;db.close();reject(err||new Error('Soundtrack save was cancelled'));};
+          });
+        }
+        async function readBgmFile(){
+          const db=await openBgmDb();
+          return new Promise((resolve,reject)=>{
+            const tx=db.transaction('tracks','readonly');
+            const request=tx.objectStore('tracks').get('title-track');
+            request.onsuccess=()=>{const value=request.result;db.close();resolve(value||null);};
+            request.onerror=()=>{const err=request.error;db.close();reject(err||new Error('Could not read saved soundtrack'));};
+          });
+        }
+        async function clearBgmFile(){
+          const db=await openBgmDb();
+          return new Promise((resolve,reject)=>{
+            const tx=db.transaction('tracks','readwrite');
+            tx.objectStore('tracks').delete('title-track');
+            tx.oncomplete=()=>{db.close();resolve();};
+            tx.onerror=()=>{const err=tx.error;db.close();reject(err||new Error('Could not remove soundtrack'));};
+          });
+        }
+        function applyBgmBlob(blob,name){
+          if(bgmObjectUrl)URL.revokeObjectURL(bgmObjectUrl);
+          bgmObjectUrl=URL.createObjectURL(blob);
+          bgmTrackName=name||'Local soundtrack';
+          bgmAudio.src=bgmObjectUrl;
+          bgmAudio.load();
+          updateBgmUi();
+        }
+        async function restoreBgm(){
+          try{
+            const saved=await readBgmFile();
+            if(saved&&saved.blob)applyBgmBlob(saved.blob,saved.name);
+          }catch(_){}
+          updateBgmUi();
+        }
+        function updateBgmUi(){
+          const status=$('#bgmStatus');
+          const toggle=$('#bgmToggle');
+          if(toggle)toggle.textContent=bgmAudio.paused?'Play music':'Pause music';
+          if(status)status.textContent=bgmAudio.src
+            ? 'Selected: '+bgmTrackName+'. Stored privately on this device; it is not uploaded to GitHub.'
+            : 'No soundtrack selected. Choose your MP3 to use it as the title and game background music.';
+        }
+        bgmAudio.addEventListener('play',updateBgmUi);
+        bgmAudio.addEventListener('pause',updateBgmUi);
+        document.addEventListener('pointerdown',()=>{
+          if(bgmAudio.src&&bgmAudio.paused)bgmAudio.play().catch(()=>{});
+        },{once:true});
         function loadLatest(){
           let latest=null;
           for(let i=1;i<=3;i++){try{const v=JSON.parse(localStorage.getItem('dxd-vn-save-'+i)||'null');if(v&&(!latest||v.timestamp>latest.timestamp))latest=v;}catch{}}
@@ -368,9 +546,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, [tabindex]:focu
           if(action==='new'){showGame();restart();}
           else if(action==='continue'){loadLatest();}
           else if(action==='load'){showGame();slots('load');}
-          else if(action==='save'){showGame();slots('save');}
-          else if(action==='preferences'){showGame();$('#settingsButton').click();}
-          else if(action==='extras'){modal('EXTRAS','<p class="empty-state">Bonus content will be added as the project develops.</p>');}
+          else if(action==='preferences'){openSettings();}
           else if(action==='gallery'){modal('GALLERY','<p class="empty-state">The CG gallery will become available when scene artwork is added.</p>');}
           else if(action==='quit'){modal('EXIT GAME','<p class="empty-state">You can close this browser tab to leave the game.</p>');}
         }));
@@ -383,9 +559,73 @@ button:focus-visible, input:focus-visible, select:focus-visible, [tabindex]:focu
         $('#dialogueShell').addEventListener('click',advance);$('#dialogueShell').addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();advance()}});
         $('#restartButton').addEventListener('click',()=>{closeQuickMenu();restart()});$('#historyButton').addEventListener('click',()=>{closeQuickMenu();modal('DIALOGUE HISTORY',entries.length?'<div class="history-list">'+entries.map(x=>'<article class="history-entry"><span>'+esc(x.speaker)+'</span><p>'+esc(x.text)+'</p></article>').join('')+'</div>':'<p class="empty-state">No dialogue yet.</p>')});
         $('#saveButton').addEventListener('click',()=>{closeQuickMenu();slots('save')});$('#loadButton').addEventListener('click',()=>{closeQuickMenu();slots('load')});
-        $('#settingsButton').addEventListener('click',()=>{closeQuickMenu();modal('PLAYER & DISPLAY SETTINGS','<form id="settingsForm" class="settings-form"><div class="field-row"><label for="firstName">First name</label><input id="firstName" required maxlength="24" value="'+esc(identity.firstName)+'"></div><div class="field-row"><label for="surname">Surname</label><input id="surname" required maxlength="24" value="'+esc(identity.surname)+'"></div><div class="field-row"><label for="speed">Text speed</label><select id="speed"><option value="10">Fast</option><option value="18">Normal</option><option value="34">Slow</option></select></div><label class="toggle-row"><input id="typewriter" type="checkbox" '+(typewriter?'checked':'')+'> Typewriter text effect</label><button class="gold-button">Save settings</button></form>');$('#speed').value=String(speed);$('#settingsForm').addEventListener('submit',e=>{e.preventDefault();const f=$('#firstName').value.trim(),s=$('#surname').value.trim();if(!f||!s)return;identity.firstName=f;identity.surname=s;speed=Number($('#speed').value);typewriter=$('#typewriter').checked;closeModal();render();toast('Settings saved.')})});
+        function openSettings(){
+          modal('PREFERENCES',
+            '<form id="settingsForm" class="settings-form">'+
+            '<div class="field-row"><label for="firstName">First name</label><input id="firstName" required maxlength="24" value="'+esc(identity.firstName)+'"></div>'+
+            '<div class="field-row"><label for="surname">Surname</label><input id="surname" required maxlength="24" value="'+esc(identity.surname)+'"></div>'+
+            '<div class="field-row"><label for="speed">Text speed</label><select id="speed"><option value="10">Fast</option><option value="18">Normal</option><option value="34">Slow</option></select></div>'+
+            '<label class="toggle-row"><input id="typewriter" type="checkbox" '+(typewriter?'checked':'')+'> Typewriter text effect</label>'+
+            '<div class="field-row music-settings"><label>Background music</label>'+
+              '<div class="music-controls">'+
+                '<button type="button" class="gold-button" id="chooseBgm">Choose MP3</button>'+
+                '<button type="button" class="gold-button" id="bgmToggle">Play music</button>'+
+                '<button type="button" class="gold-button" id="clearBgm">Remove</button>'+
+                '<input id="bgmFileInput" type="file" accept="audio/mpeg,audio/mp3,audio/ogg,audio/wav,audio/*" hidden>'+
+              '</div>'+
+              '<label class="music-volume" for="bgmVolume"><span>Volume</span><input id="bgmVolume" type="range" min="0" max="1" step="0.01" value="'+bgmAudio.volume+'"></label>'+
+              '<p class="music-status" id="bgmStatus"></p>'+
+            '</div>'+
+            '<button class="gold-button" type="submit">Save preferences</button></form>'+
+            '<p class="modal-note">Your selected soundtrack is stored locally in this browser only. It is not added to the public GitHub project.</p>'
+          );
+          $('#speed').value=String(speed);
+          updateBgmUi();
+          $('#chooseBgm').addEventListener('click',()=>$('#bgmFileInput').click());
+          $('#bgmFileInput').addEventListener('change',async e=>{
+            const file=e.target.files&&e.target.files[0];
+            if(!file)return;
+            if(file.type&&!file.type.startsWith('audio/')){toast('Please choose an audio file.');return;}
+            try{
+              await storeBgmFile(file);
+              applyBgmBlob(file,file.name);
+              try{await bgmAudio.play();}catch(_){toast('Soundtrack saved. Tap Play music to start.');}
+              updateBgmUi();
+            }catch(err){
+              toast('Could not store the soundtrack on this device.');
+            }
+          });
+          $('#bgmToggle').addEventListener('click',()=>{
+            if(!bgmAudio.src){toast('Choose your soundtrack first.');return;}
+            if(bgmAudio.paused)bgmAudio.play().catch(()=>toast('Tap Play music again to start playback.'));
+            else bgmAudio.pause();
+          });
+          $('#clearBgm').addEventListener('click',async()=>{
+            bgmAudio.pause();bgmAudio.removeAttribute('src');bgmAudio.load();
+            if(bgmObjectUrl){URL.revokeObjectURL(bgmObjectUrl);bgmObjectUrl=null;}
+            bgmTrackName='';
+            try{await clearBgmFile();}catch(_){}
+            updateBgmUi();
+          });
+          $('#bgmVolume').addEventListener('input',e=>{
+            bgmAudio.volume=Number(e.target.value);
+            localStorage.setItem('dxd-vn-bgm-volume',String(bgmAudio.volume));
+          });
+          $('#settingsForm').addEventListener('submit',e=>{
+            e.preventDefault();
+            const f=$('#firstName').value.trim(),s=$('#surname').value.trim();
+            if(!f||!s)return;
+            identity.firstName=f;identity.surname=s;
+            speed=Number($('#speed').value);typewriter=$('#typewriter').checked;
+            closeModal();
+            if($('.game-frame').classList.contains('is-active'))render();
+            toast('Preferences saved.');
+          });
+        }
+        $('#settingsButton').addEventListener('click',()=>{closeQuickMenu();openSettings()});
         $('#autoButton').addEventListener('click',()=>{auto=!auto;$('#autoButton').classList.toggle('active',auto);if(auto){const tick=()=>{if(!auto)return;if(nodes[current].type==='line'){if(!complete)completeText();else advance();autoTimer=setTimeout(tick,Math.max(1300,text.length*22))}else{auto=false;$('#autoButton').classList.remove('active')}};autoTimer=setTimeout(tick,1200)}else clearTimeout(autoTimer)});
         $('#modalClose').addEventListener('click',closeModal);$('#modalBackdrop').addEventListener('click',e=>{if(e.target===$('#modalBackdrop'))closeModal()});document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();if($('#modalBackdrop').classList.contains('hidden')&&(e.key==='ArrowRight'||e.key===' ')){e.preventDefault();advance()}});
+        restoreBgm();
         render();
       })();
     </script>
